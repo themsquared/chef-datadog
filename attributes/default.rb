@@ -342,31 +342,24 @@ default['datadog']['ddtrace_gem_version'] = nil
 # * `false` to explicitly disable it
 # Leave it to `nil` to let the agent's default behavior decide whether to run the process-agent
 default['datadog']['enable_process_agent'] = nil
+default['datadog']['process_agent']['url'] = 'https://process.datadoghq.com'
 
-# Comma-separated list of regex patterns matching process commands to blacklist.
-# Example: 'my-secret-app,dbpass'
-default['datadog']['process_agent']['blacklist'] = nil
-
-# Comma-separated list of regex patterns of containers to include or skip.
-# Each pattern should be in the form of "field:pattern" where 'field' is either
-# 'image' or 'name'.
-# Example: 'image:redis,image:nginx'
-default['datadog']['process_agent']['container_blacklist'] = nil
-# Whitelist is applied after the blacklist.
-default['datadog']['process_agent']['container_whitelist'] = nil
+# A list of regex patterns matching process commands to blacklist.
+# Example: ['my-secret-app', 'dbpass']
+default['datadog']['process_agent']['blacklist'] = []
 
 # Full path to store process-agent logs to override the default.
 default['datadog']['process_agent']['log_file'] = nil
 
 # If running in full process collection mode ('enable_process_agent' is true)
 # overrides the collection intervals for the full and real-time checks in seconds.
-default['datadog']['process_agent']['process_interval'] = nil
-default['datadog']['process_agent']['rtprocess_interval'] = nil
+default['datadog']['process_agent']['process_interval'] = 10
+default['datadog']['process_agent']['rtprocess_interval'] = 2
 
 # If only collecting containers ('enable_process_agent' is false but docker is available)
 # overrides the collection intervals for the full and real-time check.
-default['datadog']['process_agent']['container_interval'] = nil
-default['datadog']['process_agent']['rtcontainer_interval'] = nil
+default['datadog']['process_agent']['container_interval'] = 10
+default['datadog']['process_agent']['rtcontainer_interval'] = 2
 
 # Logs functionality settings
 # Set `enable_log_agent` to:

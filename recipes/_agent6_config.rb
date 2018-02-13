@@ -23,37 +23,8 @@ is_windows = node['platform_family'] == 'windows'
 #        and /etc/datadog-agent/process-agent.conf for the trace and process agents.
 #        Remove them when these agents can read from datadog.yaml.
 trace_agent_config_file = ::File.join(node['datadog']['agent6_config_dir'], 'trace-agent.conf')
-process_agent_config_file = ::File.join(node['datadog']['agent6_config_dir'], 'process-agent.conf')
 
 template trace_agent_config_file do
-  def conf_template_vars
-    {
-      :api_keys => [Chef::Datadog.api_key(node)],
-      :dd_urls => [node['datadog']['url']]
-    }
-  end
-  variables(
-    if respond_to?(:lazy)
-      lazy { conf_template_vars }
-    else
-      conf_template_vars
-    end
-  )
-  if is_windows
-    owner 'Administrators'
-    rights :full_control, 'Administrators'
-    inherits false
-  else
-    owner 'dd-agent'
-    group 'dd-agent'
-    mode '640'
-  end
-  source 'datadog.conf.erb'
-  sensitive true if Chef::Resource.instance_methods(false).include?(:sensitive)
-  notifies :restart, 'service[datadog-agent]', :delayed unless node['datadog']['agent_start'] == false
-end
-
-template process_agent_config_file do
   def conf_template_vars
     {
       :api_keys => [Chef::Datadog.api_key(node)],
@@ -87,17 +58,6 @@ datadog_monitor 'apm' do
   instances [{}]
   use_integration_template true
   if node['datadog']['enable_trace_agent'].is_a?(TrueClass)
-    action :add
-  else
-    action :remove
-  end
-end
-process_agent_init_config = { enabled: node['datadog']['enable_process_agent'] }
-datadog_monitor 'process_agent' do
-  init_config process_agent_init_config
-  instances [{}]
-  use_integration_template true
-  if node['datadog']['enable_process_agent'].is_a?(TrueClass) || node['datadog']['enable_process_agent'].is_a?(FalseClass)
     action :add
   else
     action :remove
